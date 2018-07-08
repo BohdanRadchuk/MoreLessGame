@@ -9,6 +9,7 @@ public class Controller {
     private RandomizeModel randomizeModel;
     private View view;
 
+
     private Scanner scanner = new Scanner(System.in);
 
     public Controller(RandomizeModel randomizeModel, View view) {
@@ -18,15 +19,37 @@ public class Controller {
 
     public void startGame() {
         randomizeModel.generateWinCondition(RandomizeModel.RAND_START, RandomizeModel.RAND_END);
-        checkInt(scanner);
-        int s = scanner.nextInt();
-        System.out.println(s);
+        usersInteractions(randomizeModel.getCurrentMin(), randomizeModel.getCurrentMax());
+
     }
 
-    public boolean checkInt(Scanner sc) {
-        if (sc.hasNextInt()) {
-            return true;
+    private void usersInteractions(int min, int max) {
+        view.printMessage(String.format(View.GREETINGS_MESSAGE, min, max));
+        String scanned = scanner.next();
+        if (checkInt(scanned)) {
+            int attempt = Integer.parseInt(scanned);
+
+            while (!randomizeModel.guessAttempt(attempt)) {
+
+                usersInteractions(randomizeModel.getCurrentMin(), randomizeModel.getCurrentMax());
+            }
+            System.out.println("hurey");
+            System.out.println(scanned);
+
+        } else {
+            view.printMessage(View.INPUT_NUMBER_MESSAGE);
+            usersInteractions(min, max);
         }
-        return false;
+        System.out.println("end");
+
+    }
+
+    public boolean checkInt(String scanned) {
+        try {
+            Integer.parseInt(scanned);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 }
