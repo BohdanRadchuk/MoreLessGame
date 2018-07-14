@@ -17,37 +17,61 @@ public class Controller {
         this.view = view;
     }
 
-    public void startGame() {
-        randomizeModel.generateWinCondition(RandomizeModel.RAND_START, RandomizeModel.RAND_END);
-        usersInteractions(randomizeModel.getCurrentMin(), randomizeModel.getCurrentMax());
-
+    /**
+     * used to generate from 0 to 100 range
+     */
+    public void initDefaultRangeGame() {
+        randomizeModel.generateRange();
+        startGame();
     }
 
-    private void usersInteractions(int min, int max) {
-        view.printMessage(String.format(View.GREETINGS_MESSAGE, min, max));
-        String scanned = scanner.next();
-        if (checkInt(scanned)) {
-            int attempt = Integer.parseInt(scanned);
-
-            while (!randomizeModel.guessAttempt(attempt)) {
-
-                usersInteractions(randomizeModel.getCurrentMin(), randomizeModel.getCurrentMax());
-            }
-            System.out.println("hurey");
-            System.out.println(scanned);
-
-        } else {
-            view.printMessage(View.INPUT_NUMBER_MESSAGE);
-            usersInteractions(min, max);
+    /**
+     * used to generate user chosen range
+     */
+    public void initCustomRangeGame() {
+        int min;
+        int max;
+        do {
+            view.printMessage(View.ENTER_RANGE);
+            min = getNewNumber();
+            max = getNewNumber();
         }
-        System.out.println("end");
 
+        while (!randomizeModel.generateRange(min, max));
+        startGame();
+    }
+
+    private void startGame() {
+
+        do {
+            view.printMessage(String.format(View.GREETINGS_MESSAGE, randomizeModel.getCurrentMin(),
+                    randomizeModel.getCurrentMax()));
+        }
+        while (!randomizeModel.guessAttempt(getNewNumber()));
+
+        view.printMessage(View.CONGRATS_STATISTIC + randomizeModel.getUserAttemptStatistics());
+    }
+
+
+    /**
+     * Scan for new input from user
+     * if it is a number parse it
+     *
+     * @return users input as integer value
+     */
+    private int getNewNumber() {
+        String scanned = scanner.nextLine();
+        while (!checkInt(scanned)) {
+            view.printMessage(View.INPUT_NUMBER_MESSAGE);
+            scanned = scanner.nextLine();
+        }
+        return Integer.parseInt(scanned);
     }
 
     public boolean checkInt(String scanned) {
         try {
-            Integer.parseInt(scanned);
-            return true;
+            int check = Integer.parseInt(scanned);
+            return (check > Integer.MIN_VALUE && check < Integer.MAX_VALUE);
         } catch (NumberFormatException e) {
             return false;
         }

@@ -9,6 +9,6 @@ public class MainGame {
         RandomizeModel randomizeModel = new RandomizeModel();
         View view = new View();
         Controller controller = new Controller(randomizeModel, view);
-        controller.startGame();
+        controller.initCustomRangeGame();
     }
 }

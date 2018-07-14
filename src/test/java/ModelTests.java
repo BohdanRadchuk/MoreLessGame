@@ -12,7 +12,7 @@ public class ModelTests {
     private int hundred = 100;
 
     /**
-     *
+     * Tests passed successfully
      */
     @Ignore
     @Test
@@ -46,8 +46,7 @@ public class ModelTests {
         int i = 0;
         System.out.println("checking for " + value);
         while (i < 10000) {
-            model.generateWinCondition(RandomizeModel.RAND_START, RandomizeModel.RAND_END);
-            //System.out.println(i + " - i , wincond = " + model.getWinCondition());
+            model.generateRange();
             i++;
             if (model.getWinCondition() == value) {
                 break;

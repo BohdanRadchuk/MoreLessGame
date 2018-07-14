@@ -9,66 +9,73 @@ public class RandomizeModel {
     private int currentMin;
     private int currentMax;
     private int winCondition;
-    private ArrayList<UsersAttempts> usersAttempts = new ArrayList<>();
+    private ArrayList<UserAttemptStatistic> userAttemptStatistics = new ArrayList<>();
 
-    public void generateWinCondition(int min, int max) {
-        this.currentMin = min;
-        this.currentMax = max;
-        this.winCondition = ThreadLocalRandom.current().nextInt((min + 1), max);
-        System.out.println(winCondition);
+    public void generateRange() {
+        generateWinCondition(RAND_START, RAND_END);
     }
 
-    public int getWinCondition() {
-        return winCondition;
+    public boolean generateRange(int min, int max) {
+        boolean checkResult = checkRange(min, max);
+        if (checkResult) {
+            generateWinCondition(min, max);
+        }
+        return checkResult;
+    }
+
+    private void generateWinCondition(int min, int max) {
+        this.currentMin = min;
+        this.currentMax = max;
+        //minimal border had to be increased by one to not include minimum value to randomize range
+        this.winCondition = ThreadLocalRandom.current().nextInt((min + 1), max);
     }
 
     public boolean guessAttempt(int attempt) {
-        if (checkRange(attempt)) {
+        if (checkValueRange(attempt)) {
             addAttemptStatistics(attempt);
             return winCheck(attempt);
         } else {
-            System.out.println("OOR");
             return false;
         }
-
-
     }
 
     private void addAttemptStatistics(int attempt) {
-        UsersAttempts userAttempt = new UsersAttempts();
-        userAttempt.setValue(attempt);
-        usersAttempts.add(userAttempt);
+        UserAttemptStatistic userAttemptStatistic = new UserAttemptStatistic();
+        userAttemptStatistic.setValue(attempt);
+        userAttemptStatistics.add(userAttemptStatistic);
     }
 
     private boolean winCheck(int attempt) {
         if (attempt == winCondition) {
-            //userAttempt.setAttemptResult(UsersAttempts.RESULT_WIN);
-            System.out.println("win");
             return true;
         } else {
             changeBorders(attempt);
-            System.out.println("loose");
             return false;
         }
     }
 
     private void changeBorders(int attempt) {
         if (attempt < winCondition) {
-            // usersAttempts.setAttemptResult(UsersAttempts.RESULT_LESS);
             currentMin = attempt;
         } else {
-            // usersAttempts.setAttemptResult(UsersAttempts.RESULT_MORE);
             currentMax = attempt;
         }
     }
 
-    private boolean checkRange(int attempt) {
-        if (attempt > currentMin && attempt < currentMax) {
-            return true;
-        } else {
-            return false;
-        }
+    private boolean checkRange(int min, int max) {
+        return (max - min) > 1 ;
+    }
 
+    private boolean checkValueRange(int attempt) {
+        return attempt > currentMin && attempt < currentMax;
+    }
+
+    /**
+     * used only for tests
+     * @return actual winCondition
+    */
+    public int getWinCondition() {
+        return winCondition;
     }
 
     public int getCurrentMin() {
@@ -77,5 +84,9 @@ public class RandomizeModel {
 
     public int getCurrentMax() {
         return currentMax;
+    }
+
+    public String getUserAttemptStatistics() {
+        return userAttemptStatistics.toString();
     }
 }
